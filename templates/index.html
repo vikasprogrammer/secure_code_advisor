@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Secure Code Advisor v0.1</title>
+
+  <meta http-equiv="content-type" content="text/html; charset=utf-8">
+<!--
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+-->
+  <!--
+  NOTE: "Bootstrap 3's JavaScript requires jQuery version 1.9.1 or higher, but lower than version 3"
+  -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/jquery.fancytree/2.34.0/skin-bootstrap/ui.fancytree.min.css" rel="stylesheet" class="skinswitcher">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.fancytree/2.34.0/jquery.fancytree-all.min.js"></script>
+  <script src="http://cdn.jsdelivr.net/g/filesaver.js"></script>
+
+  <script type="text/javascript">
+    var glyph_opts = {
+        preset: "bootstrap3",
+        map: {
+        }
+      };
+
+    $(function(){
+      $("#btnExpandAll").click(function(){
+        $.ui.fancytree.getTree("#tree").visit(function(node){
+          node.setExpanded(true);
+        });
+      });
+      $("#btnCollapseAll").click(function(){
+        $.ui.fancytree.getTree("#tree").visit(function(node){
+          node.setExpanded(false);
+        });
+      });
+
+      $("#btnGenerateSourceCode").click(function(){
+        paths = [];
+        $.ui.fancytree.getTree("#tree").visit(function(node){
+          if(node.isSelected()) {
+            path = node.getPath();
+            if(path.indexOf('.md') != -1) {
+              paths.push(path)
+            }
+          }
+        });
+        if(paths.length) {
+          console.log(paths);
+          // $.post('/download', { paths : paths }, function(data) {
+          //   console.log(data);
+          // });
+          $.ajax({
+              type: 'POST',
+              url: '/download',
+              data: JSON.stringify(paths), // or JSON.stringify ({name: 'jonas'}),
+              success: function(data) { 
+                // console.log(data); 
+                // alert(1);
+                var blob = new Blob([data], {type: "text/plain;charset=utf-8"});
+                saveAs(blob, "output.md");
+
+              },
+              contentType: "application/json"
+          });
+        }
+        // alert(paths);
+        // console.log($.ui.fancytree.getTree("#tree").getSelectedNodes());
+      });
+
+      
+      $( "#fontSize" ).change(function(){
+        $("#tree .fancytree-container").css("font-size", $(this).prop("value") + "pt");
+      });//.prop("value", 12);
+
+      $("#plainTreeStyles").on("change", "input", function(e){
+        $("#tree ul").toggleClass($(this).data("class"), $(this).is(":checked"));
+      });
+      $("#bootstrapTableStyles").on("change", "input", function(e){
+        $("#treetable").toggleClass($(this).data("class"), $(this).is(":checked"));
+      });
+  });
+
+    $(function(){
+      // Initialize Fancytree
+      $("#tree").fancytree({
+        extensions: ["dnd5", "edit", "glyph", "wide"],
+        checkbox: true,
+        selectMode: 3,
+        dnd5: {
+          dragStart: function(node, data) { return true; },
+          dragEnter: function(node, data) { return true; },
+          dragDrop: function(node, data) { data.otherNode.copyTo(node, data.hitMode); }
+        },
+        glyph: glyph_opts,
+        // source: {url: "ajax-tree-taxonomy.json", debugDelay: 1000},
+        source: {url: "/json", debugDelay: 1000},
+        // toggleEffect: { effect: "drop", options: {direction: "left"}, duration: 400 },
+        wide: {
+          iconWidth: "1em",       // Adjust this if @fancy-icon-width != "16px"
+          iconSpacing: "0.5em",   // Adjust this if @fancy-icon-spacing != "3px"
+          labelSpacing: "0.1em",  // Adjust this if padding between icon and label != "3px"
+          levelOfs: "1.5em"       // Adjust this if ul padding != "16px"
+        },
+        click: function(event, data) {
+          // console.log(data);
+          // return false to prevent default behavior (i.e. activation, ...)
+          //return false;
+        },
+
+
+        icon: function(event, data){
+          // if( data.node.isFolder() ) {
+          //   return "glyphicon glyphicon-book";
+          // }
+        }
+      });
+
+      
+    });
+  </script>
+
+
+</head>
+
+<body>
+  <div class="container">
+    <div class="panel panel-default">
+    <div class="panel-heading">
+      <h3>Secure Code Advisor</h3>
+    </div>
+  </div>
+
+  <div class="panel panel-default">
+    <div class="panel-heading">
+      <b>Select your programming lang, framework, db etc.</b>
+      <span class="pull-right">
+        <button id="btnExpandAll" class="btn btn-xs btn-primary">Expand all</button>
+      <button id="btnCollapseAll" class="btn btn-xs btn-warning">Collapse all</button>
+    </span>
+    </div>
+    <div id="tree" class="panel-body fancytree-colorize-hover fancytree-fade-expander fancytree-colorize-selected">
+    </div>
+
+    <div class="panel-footer">
+      <button id="btnGenerateSourceCode" class="btn btn-xm btn-success">Generate .md</button>
+      <!-- <button id="btnExpandAll" class="btn btn-xs btn-primary">Expand all</button> -->
+      <!-- <button id="btnCollapseAll" class="btn btn-xs btn-warning">Collapse all</button> -->
+    </div>
+  </div>
+  </div>
+  
+
+</body>
+</html>
