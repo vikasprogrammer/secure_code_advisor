@@ -2,9 +2,9 @@
 
 tl;dr - **tailor made secure code guidelines for everyone**
 
-Secure coding plays a big part in overall secure development, specially after the recent surge in "shift left" term being thrown around.
+Secure coding is always a challenge for orgs of any size. Everyone wants to shift left, but there is a serious lack of tools which can help with secure coding.
 
-As a part of blue team (another heavily used jargon), I always struggled with training developers to code securely. The problem is both - not having the relevant secure coding guidelines in one place and ease of using those docs internally. 
+Secure code advisor aims to make this easy. Choose your product requirements and voila you get tailor-made and ready to use secure code guidelines.
 
 Secure code advisor was born with this simple idea in mine - provide a open source repo which allows easy contribution for secure code principals, cheat sheets etc and make it easy to pick and choose the snippets according to your enterprise's requirements. 
 
@@ -13,7 +13,7 @@ This is app is built using pretty simple code on top of Flask (python) which rea
 
 To run:
 ```
-$ python3 run.py
+$ python3 app.py
 ```
 Then navigate to http://127.0.0.1:5000/ and click on the lang, db, framework etc as per your req and push "Generate .md"
 
@@ -27,11 +27,5 @@ Since this project is not about reinventing secure coding checklist, we will be 
 * https://www.sqreen.com/checklists/php-security-checklist
 * ..more..
 
-## OWASP Top 10 to File Mappings
-I have tried to 
 
-| OWASP Top 10 | File Mappings |
-|--|--|
-| 1. Injection Flaw | Input Validation |
-| 2. XSS | 2. XSS
 
